@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Pocket Ump — Graphics</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a1e5e; --navy-dark: #0d1035; --navy-mid: #1e2470;
+    --green: #3cb87a; --green-bright: #4dd68c; --green-dark: #2a8a58; --green-glow: rgba(60,184,122,0.3);
+    --white: #ffffff; --gray: #8a94b8; --bg: #080b28;
+    --card: rgba(13,16,53,0.95);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { background:var(--bg); color:var(--white); font-family:'Barlow',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(160deg, #0a0d30 0%, #141870 100%);
+    border-bottom: 2px solid var(--green);
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top:0; z-index:100;
+    box-shadow: 0 4px 24px rgba(60,184,122,0.15);
+  }
+  .logo-wrap {
+    width:46px; height:46px; flex-shrink:0;
+    background: radial-gradient(circle at 40% 35%, #4dd68c, #1a8a50);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 16px rgba(60,184,122,0.5);
+    font-size:26px; line-height:1;
+  }
+  .header-text h1 { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; line-height:1; }
+  .header-text p { font-family:'Barlow Condensed',sans-serif; font-size:11px; color:var(--green); letter-spacing:3px; text-transform:uppercase; margin-top:1px; }
+
+  /* ── MAIN ── */
+  main { max-width:600px; margin:0 auto; padding:20px 16px 40px; }
+
+  /* ── SECTION CARDS ── */
+  .card {
+    background: var(--card); border:1.5px solid var(--navy-mid);
+    border-radius:16px; padding:20px; margin-bottom:16px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  }
+  .card-title {
+    font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:2.5px;
+    color:var(--green); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .card-title::after { content:''; flex:1; height:1px; background:var(--navy-mid); }
+
+  /* ── WEEK BUTTONS ── */
+  .week-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .week-btn {
+    background:var(--navy-mid); border:1.5px solid transparent; border-radius:10px;
+    padding:12px 6px; color:var(--gray); font-family:'Barlow Condensed',sans-serif;
+    font-size:14px; font-weight:600; letter-spacing:0.5px; cursor:pointer;
+    transition:all 0.2s; text-align:center; line-height:1.3;
+  }
+  .week-btn .wdate { font-size:17px; color:var(--white); display:block; }
+  .week-btn:active { transform:scale(0.96); }
+  .week-btn.selected { background:var(--green); border-color:var(--green-bright); color:var(--navy-dark); }
+  .week-btn.selected .wdate { color:var(--navy-dark); }
+  .week-btn.past { opacity:0.45; }
+
+  /* ── NEXT WEEK PREVIEW ── */
+  .preview-list { display:none; }
+  .preview-game {
+    display:flex; align-items:center; gap:10px; padding:8px 0;
+    border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px;
+  }
+  .preview-game:last-child { border-bottom:none; }
+  .preview-badge {
+    background:var(--navy-mid); border-radius:6px; padding:4px 8px;
+    font-family:'Barlow Condensed',sans-serif; font-size:11px; color:var(--green);
+    white-space:nowrap; line-height:1.3; text-align:center; flex-shrink:0;
+  }
+  .preview-matchup { color:var(--white); font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:600; }
+
+  /* ── STANDINGS EDITOR ── */
+  .standings-table { width:100%; border-collapse:collapse; }
+  .standings-table th {
+    font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px;
+    color:var(--green); text-align:left; padding:6px 8px; border-bottom:1px solid var(--navy-mid);
+  }
+  .standings-table th:not(:first-child) { text-align:center; }
+  .standings-table td { padding:5px 8px; }
+  .standings-table td:first-child { font-family:'Barlow Condensed',sans-serif; font-size:14px; color:var(--white); }
+  .standings-table input {
+    width:50px; background:var(--navy-mid); border:1.5px solid transparent; border-radius:6px;
+    padding:6px 4px; color:var(--white); font-family:'Barlow',sans-serif; font-size:14px;
+    text-align:center; transition:border-color 0.2s;
+  }
+  .standings-table input:focus { outline:none; border-color:var(--green); }
+  .reset-btn {
+    margin-top:12px; background:transparent; border:1px solid var(--gray); border-radius:8px;
+    padding:8px 14px; color:var(--gray); font-family:'Barlow Condensed',sans-serif;
+    font-size:12px; letter-spacing:1px; cursor:pointer; transition:all 0.2s;
+  }
+  .reset-btn:active { border-color:var(--green); color:var(--green); }
+
+  /* ── UPLOAD ── */
+  .upload-zone {
+    border:2px dashed var(--navy-mid); border-radius:14px; padding:28px 20px;
+    text-align:center; cursor:pointer; transition:all 0.2s; position:relative;
+    background:rgba(26,30,94,0.2);
+  }
+  .upload-zone.active { border-color:var(--green); background:rgba(60,184,122,0.07); }
+  .upload-zone input { position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; }
+  .upload-zone .icon { font-size:40px; margin-bottom:8px; }
+  .upload-zone h3 { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1.5px; color:var(--green); }
+  .upload-zone p { font-size:12px; color:var(--gray); margin-top:4px; }
+  .upload-preview { max-width:100%; max-height:140px; border-radius:8px; margin-top:14px; object-fit:contain; display:none; }
+
+  /* ── FIELDS ── */
+  .field-group { margin-bottom:14px; }
+  .field-group label { display:block; font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:6px; }
+  .field-group input {
+    width:100%; background:var(--navy-mid); border:1.5px solid transparent; border-radius:10px;
+    padding:12px 14px; color:var(--white); font-family:'Barlow',sans-serif; font-size:15px; transition:border-color 0.2s;
+  }
+  .field-group input:focus { outline:none; border-color:var(--green); }
+
+  /* ── GENERATE BUTTON ── */
+  .generate-btn {
+    width:100%; background:linear-gradient(135deg, var(--green-dark), var(--green-bright));
+    border:none; border-radius:14px; padding:20px;
+    font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:4px;
+    color:var(--navy-dark); cursor:pointer; margin-bottom:20px;
+    box-shadow: 0 4px 24px rgba(60,184,122,0.35);
+    transition:all 0.2s; -webkit-appearance:none;
+  }
+  .generate-btn:active { transform:scale(0.98); opacity:0.9; }
+  .generate-btn:disabled { opacity:0.35; }
+
+  /* ── STATUS ── */
+  #status {
+    text-align:center; font-family:'Barlow Condensed',sans-serif;
+    font-size:14px; letter-spacing:1px; color:var(--green);
+    margin-bottom:20px; min-height:20px;
+  }
+
+  /* ── GRAPHICS OUTPUT ── */
+  .graphics-stack { display:flex; flex-direction:column; gap:20px; }
+  .graphic-wrap { display:flex; flex-direction:column; gap:10px; }
+  .graphic-label {
+    font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2.5px;
+    color:var(--green); text-align:center;
+  }
+  canvas { width:100%; aspect-ratio:1; border-radius:12px; border:1.5px solid var(--navy-mid); display:block; }
+  .dl-btn {
+    background:var(--navy-mid); border:1.5px solid var(--green); border-radius:10px;
+    padding:13px; color:var(--green); font-family:'Bebas Neue',sans-serif;
+    font-size:16px; letter-spacing:2px; cursor:pointer; text-align:center; transition:all 0.2s;
+    -webkit-appearance:none;
+  }
+  .dl-btn:active { background:var(--green); color:var(--navy-dark); }
+
+  /* ── CHATGPT PROMPT ── */
+  .prompt-card { display:none; }
+  .prompt-text {
+    background:rgba(0,0,0,0.3); border:1px solid var(--navy-mid); border-radius:10px;
+    padding:14px; font-family:'Barlow',sans-serif; font-size:12px; color:#c0c8e8;
+    line-height:1.6; white-space:pre-wrap; margin-bottom:12px; max-height:200px; overflow-y:auto;
+  }
+  .copy-btn {
+    width:100%; background:var(--green); border:none; border-radius:10px; padding:14px;
+    color:var(--navy-dark); font-family:'Bebas Neue',sans-serif; font-size:17px;
+    letter-spacing:2px; cursor:pointer; -webkit-appearance:none;
+  }
+  .copy-btn:active { opacity:0.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">🥎</div>
+  <div class="header-text">
+    <h1>The Pocket Ump</h1>
+    <p>Kimery Park · Graphics Generator</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- WEEK -->
+  <div class="card">
+    <div class="card-title">Game Night</div>
+    <div class="week-grid" id="weekButtons"></div>
+  </div>
+
+  <!-- NEXT WEEK PREVIEW -->
+  <div class="card" id="nextCard" style="display:none">
+    <div class="card-title">Next Week's Games</div>
+    <div class="preview-list" id="nextWeekList" style="display:block"></div>
+  </div>
+
+  <!-- STANDINGS -->
+  <div class="card">
+    <div class="card-title">Season Standings</div>
+    <table class="standings-table">
+      <thead><tr><th>Team</th><th>W</th><th>L</th></tr></thead>
+      <tbody id="standingsEditor"></tbody>
+    </table>
+    <button class="reset-btn" onclick="resetToWeek1()">↺ Reset to Week 1 Baseline</button>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="card">
+    <div class="card-title">Tonight's Scores</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" accept="image/*" id="scoreInput" onchange="handleUpload(this)">
+      <div class="icon">📸</div>
+      <h3>Drop Screenshot Here</h3>
+      <p>Tap to upload from your Pocket Ump app</p>
+      <img id="scorePreview" class="upload-preview">
+    </div>
+  </div>
+
+  <!-- OPTIONS -->
+  <div class="card">
+    <div class="card-title">Details</div>
+    <div class="field-group">
+      <label>Season Label</label>
+      <input type="text" id="seasonLabel" value="Men's Slowpitch Spring 2026">
+    </div>
+    <div class="field-group">
+      <label>Hashtag (optional)</label>
+      <input type="text" id="footerTag" placeholder="#KimeryPark #Slowpitch">
+    </div>
+  </div>
+
+  <button class="generate-btn" id="generateBtn" onclick="generate()">⚡ GENERATE GRAPHICS</button>
+  <div id="status"></div>
+
+  <!-- OUTPUT -->
+  <div class="graphics-stack" id="output" style="display:none">
+    <div class="graphic-wrap">
+      <div class="graphic-label">01 · TONIGHT'S RESULTS</div>
+      <canvas id="c1" width="1080" height="1080"></canvas>
+      <button class="dl-btn" onclick="downloadCanvas('c1','results')">↓ SAVE GRAPHIC</button>
+    </div>
+    <div class="graphic-wrap">
+      <div class="graphic-label">02 · STANDINGS</div>
+      <canvas id="c2" width="1080" height="1080"></canvas>
+      <button class="dl-btn" onclick="downloadCanvas('c2','standings')">↓ SAVE GRAPHIC</button>
+    </div>
+    <div class="graphic-wrap">
+      <div class="graphic-label">03 · NEXT WEEK</div>
+      <canvas id="c3" width="1080" height="1080"></canvas>
+      <button class="dl-btn" onclick="downloadCanvas('c3','schedule')">↓ SAVE GRAPHIC</button>
+    </div>
+  </div>
+
+  <!-- NIGHT SUMMARY -->
+  <div class="card prompt-card" id="promptCard" style="margin-top:20px">
+    <div class="card-title">📝 Night Summary</div>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:12px;">Copy and paste as a caption or drop it in the group chat.</p>
+    <div class="prompt-text" id="promptText"></div>
+    <button class="copy-btn" onclick="copyPrompt()">📋 COPY SUMMARY</button>
+  </div>
+
+</main>
+
+<script>
+const SEASON = [
+  { date:'Wednesday, Mar 11, 2026', short:'Mar 11', games:[
+    {time:'6:00 PM',field:'Field 1',home:'Hawgs',away:'Big Za'},
+    {time:'6:00 PM',field:'Field 2',home:'Junior Varsity',away:'Suttons'},
+    {time:'7:00 PM',field:'Field 1',home:'Oddballs',away:'Hawgs'},
+    {time:'7:00 PM',field:'Field 2',home:'Big Za',away:'Junior Varsity'},
+    {time:'8:00 PM',field:'Field 1',home:'Oddballs',away:'Big Za'},
+  ]},
+  { date:'Wednesday, Mar 18, 2026', short:'Mar 18', games:[
+    {time:'6:00 PM',field:'Field 1',home:'Junior Varsity',away:'Suttons'},
+    {time:'6:00 PM',field:'Field 4',home:'Hawgs',away:'Big Za'},
+    {time:'7:00 PM',field:'Field 1',home:'Hawgs',away:'Junior Varsity'},
+    {time:'7:00 PM',field:'Field 4',home:'Suttons',away:'Oddballs'},
+    {time:'8:00 PM',field:'Field 1',home:'Oddballs',away:'Hawgs'},
+  ]},
+  { date:'Wednesday, Mar 25, 2026', short:'Mar 25', games:[
+    {time:'6:00 PM',field:'Field 1',home:'Junior Varsity',away:'Big Za'},
+    {time:'6:00 PM',field:'Field 4',home:'Suttons',away:'Hawgs'},
+    {time:'7:00 PM',field:'Field 1',home:'Oddballs',away:'Big Za'},
+    {time:'7:00 PM',field:'Field 4',home:'Hawgs',away:'Suttons'},
+    {time:'8:00 PM',field:'Field 1',home:'Junior Varsity',away:'Oddballs'},
+  ]},
+  { date:'Wednesday, Apr 1, 2026', short:'Apr 1', games:[
+    {time:'6:00 PM',field:'Field 1',home:'Big Za',away:'Suttons'},
+    {time:'6:00 PM',field:'Field 4',home:'Junior Varsity',away:'Hawgs'},
+    {time:'7:00 PM',field:'Field 1',home:'Suttons',away:'Big Za'},
+    {time:'7:00 PM',field:'Field 4',home:'Oddballs',away:'Junior Varsity'},
+    {time:'8:00 PM',field:'Field 1',home:'Hawgs',away:'Oddballs'},
+  ]},
+  { date:'Wednesday, Apr 8, 2026', short:'Apr 8', games:[
+    {time:'6:00 PM',field:'Field 1',home:'Suttons',away:'Junior Varsity'},
+    {time:'6:00 PM',field:'Field 4',home:'Big Za',away:'Hawgs'},
+    {time:'7:00 PM',field:'Field 1',home:'Suttons',away:'Oddballs'},
+    {time:'7:00 PM',field:'Field 4',home:'Hawgs',away:'Junior Varsity'},
+    {time:'8:00 PM',field:'Field 1',home:'Oddballs',away:'Suttons'},
+  ]},
+];
+
+const WEEK1 = {'Junior Varsity':{w:2,l:0},'Big Za':{w:2,l:1},'Hawgs':{w:1,l:0},'Suttons':{w:0,l:2},'Oddballs':{w:0,l:2}};
+const TEAMS = ['Junior Varsity','Big Za','Hawgs','Suttons','Oddballs'];
+
+// Colors
+const C = {
+  bg1:'#04061a', bg2:'#0a0d2e', navy:'#0d1035', navyM:'#1e2470',
+  green:'#3cb87a', greenB:'#4dd68c', greenD:'#1a6644',
+  white:'#ffffff', gray:'#7a84a8', gold:'#f5c842'
+};
+
+let scoreB64=null, selWeek=null, standings={};
+
+function init() {
+  loadStandings();
+  renderEditor();
+  const today = new Date();
+  const container = document.getElementById('weekButtons');
+  SEASON.forEach((w,i) => {
+    const d = new Date(w.date);
+    const past = d < today && d.toDateString()!==today.toDateString();
+    const isTdy = d.toDateString()===today.toDateString();
+    const btn = document.createElement('button');
+    btn.className='week-btn'+(past?' past':'')+(isTdy?' selected':'');
+    btn.innerHTML=`<span class="wdate">${w.short.split(' ')[1]}</span>${w.short.split(' ')[0]}`;
+    btn.onclick=()=>selectWeek(i);
+    container.appendChild(btn);
+    if(isTdy) selWeek=i;
+  });
+  if(selWeek===null){
+    for(let i=0;i<SEASON.length;i++){if(new Date(SEASON[i].date)>=today){selectWeek(i);break;}}
+    if(selWeek===null) selectWeek(SEASON.length-1);
+  } else updateNextPreview();
+}
+
+function loadStandings(){
+  try { const s=localStorage.getItem('kp26'); standings=s?JSON.parse(s):JSON.parse(JSON.stringify(WEEK1)); }
+  catch(e){ standings=JSON.parse(JSON.stringify(WEEK1)); }
+  TEAMS.forEach(t=>{ if(!standings[t]) standings[t]={w:0,l:0}; });
+}
+
+function saveStandings(){ try{localStorage.setItem('kp26',JSON.stringify(standings));}catch(e){} }
+
+function resetToWeek1(){
+  standings=JSON.parse(JSON.stringify(WEEK1));
+  saveStandings(); renderEditor(); setStatus('↺ Reset to Week 1 baseline.');
+}
+
+function renderEditor(){
+  const sorted=getSorted();
+  document.getElementById('standingsEditor').innerHTML=sorted.map(t=>`
+    <tr>
+      <td>${t.name}</td>
+      <td><input type="number" min="0" inputmode="numeric" value="${t.w}" onchange="updateStat('${t.name}','w',this.value)"></td>
+      <td><input type="number" min="0" inputmode="numeric" value="${t.l}" onchange="updateStat('${t.name}','l',this.value)"></td>
+    </tr>`).join('');
+}
+
+function updateStat(team,stat,val){ standings[team][stat]=parseInt(val)||0; saveStandings(); }
+
+function getSorted(){
+  return TEAMS.map(n=>({name:n,...standings[n]})).sort((a,b)=>b.w-a.w||(a.l-b.l));
+}
+
+function selectWeek(i){
+  selWeek=i;
+  document.querySelectorAll('.week-btn').forEach((b,j)=>b.classList.toggle('selected',j===i));
+  updateNextPreview();
+}
+
+function updateNextPreview(){
+  const ni=selWeek+1;
+  const card=document.getElementById('nextCard');
+  const list=document.getElementById('nextWeekList');
+  if(ni>=SEASON.length){card.style.display='none';return;}
+  card.style.display='block';
+  list.innerHTML=SEASON[ni].games.map(g=>`
+    <div class="preview-game">
+      <div class="preview-badge">${g.time.replace(' PM','p')}<br>${g.field.replace('Field ','F')}</div>
+      <div class="preview-matchup">${g.home} <span style="color:var(--green)">vs</span> ${g.away}</div>
+    </div>`).join('');
+}
+
+function handleUpload(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    scoreB64=e.target.result;
+    const img=document.getElementById('scorePreview');
+    img.src=scoreB64; img.style.display='block';
+    document.getElementById('uploadZone').classList.add('active');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setStatus(msg){ document.getElementById('status').textContent=msg; }
+
+async function callClaude(prompt,images){
+  const content=[];
+  for(const img of images){
+    content.push({type:'image',source:{type:'base64',media_type:img.split(';')[0].split(':')[1],data:img.split(',')[1]}});
+  }
+  content.push({type:'text',text:prompt});
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content}]})
+  });
+  const d=await r.json();
+  return d.content.map(b=>b.text||'').join('');
+}
+
+async function generate(){
+  if(!scoreB64){setStatus('Upload tonight\'s score screenshot first.');return;}
+  if(selWeek===null){setStatus('Select a game night.');return;}
+  const btn=document.getElementById('generateBtn'); btn.disabled=true;
+  const season=document.getElementById('seasonLabel').value||"Men's Slowpitch Spring 2026";
+  const tag=document.getElementById('footerTag').value||'';
+  const week=SEASON[selWeek];
+  try{
+    setStatus('Reading scores...');
+    const raw=await callClaude(
+      `Extract ALL game results from this softball umpire app screenshot. Return ONLY valid JSON, no markdown.
+Format: {"games":[{"home":"TeamA","homeScore":21,"away":"TeamB","awayScore":12}]}
+Teams: Big Za, Suttons, Hawgs, Oddballs, Junior Varsity. Exact names only.`,
+      [scoreB64]
+    );
+    let scoreData;
+    try{scoreData=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+    catch(e){scoreData={games:[]};}
+
+    addGames(scoreData.games);
+    renderEditor();
+
+    const ni=selWeek+1;
+    const nextGames=ni<SEASON.length?SEASON[ni].games:[];
+    const sorted=getSorted();
+
+    setStatus('Painting graphics...');
+    drawResults(scoreData.games,season,week);
+    drawStandings(sorted,season,week);
+    drawSchedule(nextGames,season,ni<SEASON.length?SEASON[ni]:null,tag);
+
+    buildSummary(scoreData.games,sorted,week.short,season);
+    document.getElementById('output').style.display='flex';
+    document.getElementById('promptCard').style.display='block';
+    setStatus('✓ Done! Save and post.');
+  }catch(err){setStatus('Error: '+err.message);}
+  btn.disabled=false;
+}
+
+function addGames(games){
+  for(const g of games){
+    TEAMS.forEach(t=>{if(!standings[t])standings[t]={w:0,l:0};});
+    if(!standings[g.home])standings[g.home]={w:0,l:0};
+    if(!standings[g.away])standings[g.away]={w:0,l:0};
+    if(g.homeScore>g.awayScore){standings[g.home].w++;standings[g.away].l++;}
+    else{standings[g.away].w++;standings[g.home].l++;}
+  }
+  saveStandings();
+}
+
+// ════════════════════════════════════════
+// CANVAS DRAWING — Stadium Style
+// ════════════════════════════════════════
+
+function stadiumBg(ctx, S) {
+  // Deep space base
+  ctx.fillStyle='#020410'; ctx.fillRect(0,0,S,S);
+
+  // Radial glow from center-top (stadium lights effect)
+  const gl1=ctx.createRadialGradient(S/2,S*0.1,0,S/2,S*0.1,S*0.9);
+  gl1.addColorStop(0,'rgba(30,50,180,0.5)');
+  gl1.addColorStop(0.4,'rgba(10,15,60,0.4)');
+  gl1.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gl1; ctx.fillRect(0,0,S,S);
+
+  // Green field glow from bottom
+  const gl2=ctx.createRadialGradient(S/2,S*1.1,0,S/2,S*1.1,S*0.85);
+  gl2.addColorStop(0,'rgba(30,120,70,0.45)');
+  gl2.addColorStop(0.5,'rgba(10,50,30,0.2)');
+  gl2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gl2; ctx.fillRect(0,0,S,S);
+
+  // Light ray streaks from top left
+  ctx.save(); ctx.globalAlpha=0.06;
+  for(let i=0;i<6;i++){
+    const angle=-0.3+i*0.12;
+    const gRay=ctx.createLinearGradient(0,0,Math.cos(angle)*S*1.5,Math.sin(angle)*S*1.5);
+    gRay.addColorStop(0,'rgba(255,255,255,0.8)'); gRay.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=gRay;
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.lineTo(Math.cos(angle-0.04)*S*2,Math.sin(angle-0.04)*S*2);
+    ctx.lineTo(Math.cos(angle+0.04)*S*2,Math.sin(angle+0.04)*S*2);
+    ctx.closePath(); ctx.fill();
+  }
+  // Light ray streaks from top right
+  for(let i=0;i<6;i++){
+    const angle=Math.PI+0.3-i*0.12;
+    const gRay=ctx.createLinearGradient(S,0,S+Math.cos(angle)*S*1.5,Math.sin(angle)*S*1.5);
+    gRay.addColorStop(0,'rgba(255,255,255,0.8)'); gRay.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=gRay;
+    ctx.beginPath(); ctx.moveTo(S,0);
+    ctx.lineTo(S+Math.cos(angle-0.04)*S*2,Math.sin(angle-0.04)*S*2);
+    ctx.lineTo(S+Math.cos(angle+0.04)*S*2,Math.sin(angle+0.04)*S*2);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+
+  // Subtle diamond pattern at bottom
+  ctx.save(); ctx.globalAlpha=0.04;
+  ctx.strokeStyle='#3cb87a'; ctx.lineWidth=2;
+  const cx=S/2, cy=S*1.1, dr=S*0.6;
+  ctx.beginPath(); ctx.moveTo(cx,cy-dr); ctx.lineTo(cx+dr,cy); ctx.lineTo(cx,cy+dr); ctx.lineTo(cx-dr,cy); ctx.closePath(); ctx.stroke();
+  ctx.globalAlpha=0.03; ctx.beginPath(); ctx.moveTo(cx,cy-dr*0.6); ctx.lineTo(cx+dr*0.6,cy); ctx.lineTo(cx,cy+dr*0.6); ctx.lineTo(cx-dr*0.6,cy); ctx.closePath(); ctx.stroke();
+  ctx.restore();
+
+  // Scanline texture
+  ctx.save(); ctx.globalAlpha=0.025;
+  for(let y=0;y<S;y+=4){ ctx.fillStyle='rgba(0,0,0,1)'; ctx.fillRect(0,y,S,2); }
+  ctx.restore();
+}
+
+function drawSoftball(ctx, x, y, r) {
+  // Ball
+  const bg=ctx.createRadialGradient(x-r*0.3,y-r*0.3,r*0.1,x,y,r);
+  bg.addColorStop(0,'#f0f0d0'); bg.addColorStop(1,'#c8c87a');
+  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle=bg; ctx.fill();
+  // Seams
+  ctx.strokeStyle='#cc3333'; ctx.lineWidth=r*0.1; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(x-r*0.25,y,r*0.5,-0.8,0.8); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x+r*0.25,y,r*0.5,Math.PI-0.8,Math.PI+0.8); ctx.stroke();
+}
+
+function topBar(ctx, S, season, date) {
+  // Green top strip
+  const tg=ctx.createLinearGradient(0,0,S,0);
+  tg.addColorStop(0,C.greenD); tg.addColorStop(0.5,C.green); tg.addColorStop(1,C.greenD);
+  ctx.fillStyle=tg; ctx.fillRect(0,0,S,88);
+
+  // Softballs on each end of bar
+  drawSoftball(ctx, 54, 44, 28);
+  drawSoftball(ctx, S-54, 44, 28);
+
+  // Season text
+  ctx.fillStyle=C.navy; ctx.font="bold 30px 'Barlow Condensed',sans-serif";
+  ctx.textAlign='center'; ctx.fillText(season.toUpperCase(), S/2, 52);
+  if(date){
+    ctx.font="500 22px 'Barlow Condensed',sans-serif";
+    ctx.fillText(date, S/2, 76);
+  }
+}
+
+function sectionTitle(ctx, S, title, y) {
+  // Glowing title
+  ctx.save();
+  ctx.shadowColor=C.green; ctx.shadowBlur=20;
+  ctx.fillStyle=C.white; ctx.font=`bold 96px 'Bebas Neue',sans-serif`;
+  ctx.textAlign='left'; ctx.fillText(title, 56, y);
+  ctx.restore();
+  // Green underline
+  const ug=ctx.createLinearGradient(56,0,56+300,0);
+  ug.addColorStop(0,C.green); ug.addColorStop(1,'rgba(60,184,122,0)');
+  ctx.fillStyle=ug; ctx.fillRect(56,y+8,280,5);
+}
+
+function bottomBar(ctx, S, label, tag) {
+  const bg=ctx.createLinearGradient(0,S-80,0,S);
+  bg.addColorStop(0,'rgba(13,16,53,0)'); bg.addColorStop(0.3,'rgba(13,16,53,0.95)');
+  ctx.fillStyle=bg; ctx.fillRect(0,S-80,S,80);
+
+  ctx.fillStyle=C.green; ctx.font="600 28px 'Barlow Condensed',sans-serif";
+  ctx.textAlign='center';
+  ctx.fillText(tag?`${label.toUpperCase()}  ·  ${tag}`:label.toUpperCase(), S/2, S-22);
+  // dots
+  ctx.beginPath(); ctx.arc(48,S-40,8,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(S-48,S-40,8,0,Math.PI*2); ctx.fill();
+}
+
+// ── GRAPHIC 1: Results ──
+function drawResults(games, season, week) {
+  const cv=document.getElementById('c1'), ctx=cv.getContext('2d'), S=1080;
+  stadiumBg(ctx,S);
+  topBar(ctx,S,season,week.date);
+  sectionTitle(ctx,S,"TONIGHT'S RESULTS",210);
+  bottomBar(ctx,S,week.short,'');
+
+  if(!games.length){
+    ctx.fillStyle=C.gray; ctx.font='40px Barlow'; ctx.textAlign='center'; ctx.fillText('No games found',S/2,S/2); return;
+  }
+
+  const startY=238, avail=S-238-90;
+  const rowH=Math.min(120,avail/games.length);
+
+  games.forEach((g,i)=>{
+    const y=startY+i*rowH, winner=g.homeScore>g.awayScore?'home':'away';
+    const fy=y+rowH*0.64, fs=Math.round(rowH*0.36);
+
+    // Row bg
+    const rb=ctx.createLinearGradient(40,y,S-40,y);
+    if(winner==='home'){ rb.addColorStop(0,'rgba(60,184,122,0.14)'); rb.addColorStop(1,'rgba(60,184,122,0.02)'); }
+    else { rb.addColorStop(0,'rgba(60,184,122,0.02)'); rb.addColorStop(1,'rgba(60,184,122,0.14)'); }
+    ctx.fillStyle=i%2===0?'rgba(13,16,53,0.7)':'rgba(8,10,40,0.7)';
+    ctx.beginPath(); ctx.roundRect(40,y+4,S-80,rowH-8,10); ctx.fill();
+    ctx.fillStyle=rb; ctx.beginPath(); ctx.roundRect(40,y+4,S-80,rowH-8,10); ctx.fill();
+
+    const mid=S/2;
+
+    // Home team
+    ctx.textAlign='right'; ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.fillStyle=winner==='home'?C.white:C.gray;
+    if(winner==='home'){ctx.save();ctx.shadowColor=C.white;ctx.shadowBlur=8;}
+    ctx.fillText(g.home.toUpperCase(), mid-110, fy);
+    if(winner==='home') ctx.restore();
+
+    // Home score
+    ctx.font=`900 ${Math.round(rowH*0.55)}px 'Barlow Condensed',sans-serif`;
+    ctx.fillStyle=winner==='home'?C.greenB:C.gray;
+    if(winner==='home'){ctx.save();ctx.shadowColor=C.green;ctx.shadowBlur=16;}
+    ctx.fillText(g.homeScore, mid-22, fy);
+    if(winner==='home') ctx.restore();
+
+    // Dash
+    ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.2)';
+    ctx.font=`300 ${Math.round(rowH*0.3)}px Barlow`; ctx.fillText('–',mid,fy);
+
+    // Away score
+    ctx.textAlign='left';
+    ctx.font=`900 ${Math.round(rowH*0.55)}px 'Barlow Condensed',sans-serif`;
+    ctx.fillStyle=winner==='away'?C.greenB:C.gray;
+    if(winner==='away'){ctx.save();ctx.shadowColor=C.green;ctx.shadowBlur=16;}
+    ctx.fillText(g.awayScore, mid+22, fy);
+    if(winner==='away') ctx.restore();
+
+    // Away team
+    ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.fillStyle=winner==='away'?C.white:C.gray;
+    if(winner==='away'){ctx.save();ctx.shadowColor=C.white;ctx.shadowBlur=8;}
+    ctx.fillText(g.away.toUpperCase(), mid+110, fy);
+    if(winner==='away') ctx.restore();
+
+    // W label
+    ctx.save(); ctx.shadowColor=C.green; ctx.shadowBlur=10;
+    ctx.fillStyle=C.green; ctx.font=`700 ${Math.round(fs*0.6)}px 'Barlow Condensed',sans-serif`;
+    ctx.textAlign='center'; ctx.fillText('WIN', winner==='home'?62:S-62, fy-2);
+    ctx.restore();
+  });
+}
+
+// ── GRAPHIC 2: Standings ──
+function drawStandings(sorted, season, week) {
+  const cv=document.getElementById('c2'), ctx=cv.getContext('2d'), S=1080;
+  stadiumBg(ctx,S);
+  topBar(ctx,S,season,week.date);
+  sectionTitle(ctx,S,'STANDINGS',210);
+  bottomBar(ctx,S,week.short,'');
+
+  const hY=248, cols={rank:72,name:200,w:760,l:880};
+  // Header row
+  ctx.fillStyle='rgba(30,36,112,0.8)'; ctx.fillRect(40,hY,S-80,52);
+  ctx.font="600 26px 'Barlow Condensed',sans-serif"; ctx.fillStyle=C.green;
+  ctx.textAlign='center'; ctx.fillText('#',cols.rank,hY+36);
+  ctx.textAlign='left';   ctx.fillText('TEAM',cols.name,hY+36);
+  ctx.textAlign='center';
+  ctx.fillText('W',cols.w,hY+36); ctx.fillText('L',cols.l,hY+36);
+
+  const rowH=Math.min(116,(S-hY-52-90)/Math.max(sorted.length,1));
+
+  sorted.forEach((t,i)=>{
+    const y=hY+52+i*rowH, fy=y+rowH*0.66, fs=Math.round(rowH*0.46);
+
+    // Row
+    if(i===0){
+      const rg=ctx.createLinearGradient(40,y,S-40,y);
+      rg.addColorStop(0,'rgba(60,184,122,0.18)'); rg.addColorStop(0.5,'rgba(60,184,122,0.1)'); rg.addColorStop(1,'rgba(60,184,122,0.18)');
+      ctx.fillStyle=rg;
+    } else {
+      ctx.fillStyle=i%2===0?'rgba(13,16,53,0.75)':'rgba(8,10,40,0.6)';
+    }
+    ctx.fillRect(40,y,S-80,rowH-4);
+
+    // Rank
+    ctx.font=`900 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.textAlign='center';
+    if(i===0){ctx.save();ctx.shadowColor=C.gold;ctx.shadowBlur=16;ctx.fillStyle=C.gold;}
+    else if(i===1){ctx.save();ctx.shadowColor='#aaa';ctx.shadowBlur=8;ctx.fillStyle='#cccccc';}
+    else if(i===2){ctx.save();ctx.shadowColor='#cd7f32';ctx.shadowBlur=8;ctx.fillStyle='#cd7f32';}
+    else{ctx.save();ctx.fillStyle=C.gray;}
+    ctx.fillText(i+1,cols.rank,fy); ctx.restore();
+
+    // Team name
+    ctx.textAlign='left'; ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    if(i===0){ctx.save();ctx.shadowColor=C.green;ctx.shadowBlur=12;ctx.fillStyle=C.white;}
+    else{ctx.save();ctx.fillStyle='#d0d8f0';}
+    ctx.fillText(t.name.toUpperCase(),cols.name,fy); ctx.restore();
+
+    // W / L
+    ctx.textAlign='center';
+    ctx.save(); ctx.shadowColor=C.green; ctx.shadowBlur=8;
+    ctx.fillStyle=C.white; ctx.font=`900 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.fillText(t.w,cols.w,fy); ctx.restore();
+    ctx.fillStyle=C.gray; ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.fillText(t.l,cols.l,fy);
+
+    // Crown / medals
+    const medals=['👑','🥈','🥉'];
+    if(i<3){
+      ctx.font=`${Math.round(fs*0.8)}px serif`;
+      ctx.textAlign='right'; ctx.fillText(medals[i],S-52,fy);
+    }
+  });
+}
+
+// ── GRAPHIC 3: Schedule ──
+function drawSchedule(games, season, nextWeek, tag) {
+  const cv=document.getElementById('c3'), ctx=cv.getContext('2d'), S=1080;
+  stadiumBg(ctx,S);
+  topBar(ctx,S,season,nextWeek?nextWeek.date:'');
+  sectionTitle(ctx,S,'NEXT WEEK',210);
+  bottomBar(ctx,S,nextWeek?nextWeek.short:'',tag);
+
+  if(!games.length){
+    ctx.fillStyle=C.gray; ctx.font='40px Barlow'; ctx.textAlign='center';
+    ctx.fillText('Season Complete!',S/2,S/2);
+    ctx.font='28px Barlow'; ctx.fillText('See you next season.',S/2,S/2+50); return;
+  }
+
+  const startY=238, rowH=Math.min(126,(S-238-90)/games.length);
+
+  games.forEach((g,i)=>{
+    const y=startY+i*rowH, fy=y+rowH*0.6, fs=Math.round(rowH*0.34);
+
+    ctx.fillStyle=i%2===0?'rgba(13,16,53,0.75)':'rgba(8,10,40,0.6)';
+    ctx.beginPath(); ctx.roundRect(40,y+4,S-80,rowH-8,10); ctx.fill();
+
+    // Time/Field badge
+    const bg2=ctx.createLinearGradient(52,y,52+200,y);
+    bg2.addColorStop(0,'rgba(30,36,112,0.95)'); bg2.addColorStop(1,'rgba(20,24,100,0.8)');
+    ctx.fillStyle=bg2; ctx.beginPath(); ctx.roundRect(52,y+12,196,rowH-24,8); ctx.fill();
+    ctx.save(); ctx.shadowColor=C.green; ctx.shadowBlur=8;
+    ctx.fillStyle=C.green; ctx.font=`700 ${Math.round(fs*0.85)}px 'Barlow Condensed',sans-serif`;
+    ctx.textAlign='center'; ctx.fillText(g.time,150,y+rowH*0.42); ctx.restore();
+    ctx.fillStyle=C.gray; ctx.font=`500 ${Math.round(fs*0.7)}px 'Barlow Condensed',sans-serif`;
+    ctx.fillText(g.field.toUpperCase(),150,y+rowH*0.72);
+
+    // Matchup
+    const mx=270;
+    ctx.textAlign='left'; ctx.fillStyle=C.white;
+    ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    const hw=ctx.measureText(g.home.toUpperCase()).width;
+    ctx.fillText(g.home.toUpperCase(),mx,fy);
+    ctx.save(); ctx.shadowColor=C.green; ctx.shadowBlur=6;
+    ctx.fillStyle=C.green; ctx.font=`600 ${Math.round(fs*0.75)}px 'Barlow Condensed',sans-serif`;
+    const vw=ctx.measureText(' vs ').width;
+    ctx.fillText(' vs ',mx+hw+4,fy); ctx.restore();
+    ctx.fillStyle='#c0ccf0'; ctx.font=`700 ${fs}px 'Barlow Condensed',sans-serif`;
+    ctx.fillText(g.away.toUpperCase(),mx+hw+vw+4,fy);
+  });
+}
+
+async function buildSummary(games, sorted, weekShort, season){
+  document.getElementById('promptText').textContent = 'Writing summary...';
+  const gameLines = games.map(g => {
+    const winner = g.homeScore > g.awayScore ? g.home : g.away;
+    const loser  = g.homeScore > g.awayScore ? g.away : g.home;
+    const ws = Math.max(g.homeScore, g.awayScore);
+    const ls = Math.min(g.homeScore, g.awayScore);
+    return winner + ' def. ' + loser + ' ' + ws + '-' + ls;
+  }).join('\n');
+  const standingLines = sorted.map((t,i)=> (i+1) + '. ' + t.name + ' (' + t.w + '-' + t.l + ')').join('\n');
+  const prompt = `You are the voice of a fun, passionate recreational softball league. Write a short night recap (4-6 sentences max) for the Kimery Park Men's Slowpitch Spring 2026 league — ${weekShort}.\n\nTonight's results:\n${gameLines}\n\nCurrent standings after tonight:\n${standingLines}\n\nWrite in a punchy, casual sports recap tone — like a quick post for the league Facebook page or group chat. Mention the biggest win of the night, who is leading the standings, and hype up next week. Keep it tight and fun. No hashtags. No emojis. Just good copy.`;
+  try {
+    const summary = await callClaude(prompt, []);
+    document.getElementById('promptText').textContent = summary.trim();
+  } catch(e) {
+    document.getElementById('promptText').textContent = 'Could not generate summary. Check your connection.';
+  }
+}
+
+function copyPrompt(){
+  navigator.clipboard.writeText(document.getElementById('promptText').textContent).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.textContent='✓ COPIED!'; setTimeout(()=>btn.textContent='📋 COPY SUMMARY',2000);
+  });
+}
+
+function downloadCanvas(id,name){
+  const cv=document.getElementById(id), a=document.createElement('a');
+  a.download=`pocket-ump-${name}-${Date.now()}.png`;
+  a.href=cv.toDataURL('image/png'); a.click();
+}
+
+init();
+</script>
+</body>
+</html>
